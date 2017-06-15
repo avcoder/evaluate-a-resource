@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <title></title>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <style>
+      main, aside { 
+         display: flex; 
+         flex-wrap: wrap;
+         justify-content: space-around;
+      }
+
+   </style>
+</head>
+
+<body>
+   <h1 style="margin-top: 40px;">Result #1: Genetically Modified Crops</h1>
+   <button id="reset" style="background-color: #aaf1be; padding: 5px; font-size: 18px; border-radius: 5px; text-decoration: none; color: #000">Reset Charts</button>
+   <a href="charts.html" style="background-color: darkkhaki; padding: 5px; font-size: 18px; border-radius: 5px; text-decoration: none; color: #000">&larr; Previous Set</a>
+   <br /><br />
+   
+   <main style="margin-top: 40px">
+      <div id='myChart'></div>
+      <div id='myChart2'></div>
+      <div id='myChart3'></div>
+      <div id='myChart4'></div>
+   </main>
+   <br /><br /><br />
+   <aside>
+      <div id='myChart5'></div>
+   </aside>
+
+
+
+
+
+
+
+
+
+
+   <!-- js -->
+   <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+   
+   <script>
+      // get data via ajax or fetch by calling my getResults function
+      var getData = new Object();
+
+      fetch('http://avillaruz.computerstudi.es/my_lambda/display.php').then(function(response) { 
+
+         // Convert to JSON
+         return response.json();
+
+      }).then(function(data) {
+
+         getData.r2q1_yes    = data['r2q1'][0].yes;
+         getData.r2q1_no     = data['r2q1'][0].no;
+         getData.r2q1_unsure = data['r2q1'][0].unsure;
+
+         getData.r2q2_yes    = data['r2q2'][0].yes;
+         getData.r2q2_no     = data['r2q2'][0].no;
+         getData.r2q2_unsure = data['r2q2'][0].unsure;
+
+         getData.r2q3_yes    = data['r2q3'][0].yes;
+         getData.r2q3_no     = data['r2q3'][0].no;
+         getData.r2q3_unsure = data['r2q3'][0].unsure;
+         
+         getData.r2q4_yes    = data['r2q4'][0].yes;
+         getData.r2q4_no     = data['r2q4'][0].no;
+         getData.r2q4_unsure = data['r2q4'][0].unsure;
+         
+         getData.r2q5_yes    = data['r2q5'][0].yes;
+         getData.r2q5_no     = data['r2q5'][0].no;
+         getData.r2q5_unsure = data['r2q5'][0].unsure;
+         
+         getData.count = data['r2q1'][0].count;
+         
+         // only draw the charts once the data is received.
+         // Otherwise the charts will try to render before json data was received
+         drawCharts();
+      });   
+
+      function drawCharts() {
+
+         var myConfig = {
+            type: "pie", 
+            backgroundColor: "#2B313B",
+            plot: {
+            borderColor: "#2B313B",
+            borderWidth: 5,
+            // slice: 90,
+            valueBox: {
+               placement: 'out',
+               text: '%t\n%npv%',
+               fontFamily: "Open Sans"
+            },
+            tooltip:{
+               fontSize: '18',
+               fontFamily: "Open Sans",
+               padding: "5 10",
+               text: "%npv%"
+            },
+            animation:{
+               effect: 2, 
+               method: 5,
+               speed: 500,
+               sequence: 1
+            }
+            },
+            title: {
+            fontColor: "#fff",
+            text: 'Keywords included?',
+            align: "left",
+            offsetX: 10,
+            fontFamily: "Open Sans",
+            fontSize: 25
+            },
+            plotarea: {
+            margin: "20 0 0 0"  
+            },
+            series : [
+               {
+                  values : [getData.r2q1_yes / getData.count],
+                  text: "YES",
+               backgroundColor: '#9dff8e',
+               },
+               {
+                  values: [getData.r2q1_no / getData.count],
+                  text: "NO",
+               backgroundColor: '#ed8a7b'
+               },
+               {
+                  values: [getData.r2q1_unsure / getData.count],
+                  text: "UNSURE",
+               backgroundColor: '#f9f9ae'
+               }
+            ]
+         };
+
+         var myConfig2 = {
+            type: "pie", 
+            backgroundColor: "#2B313B",
+            plot: {
+            borderColor: "#2B313B",
+            borderWidth: 5,
+            // slice: 90,
+            valueBox: {
+               placement: 'out',
+               text: '%t\n%npv%',
+               fontFamily: "Open Sans"
+            },
+            tooltip:{
+               fontSize: '18',
+               fontFamily: "Open Sans",
+               padding: "5 10",
+               text: "%npv%"
+            },
+            animation:{
+               effect: 2, 
+               method: 5,
+               speed: 500,
+               sequence: 1
+            }
+            },
+            title: {
+            fontColor: "#fff",
+            text: 'Required Timeframe?',
+            align: "left",
+            offsetX: 10,
+            fontFamily: "Open Sans",
+            fontSize: 25
+            },
+            plotarea: {
+            margin: "20 0 0 0"  
+            },
+            series : [
+               {
+                  values : [getData.r2q2_yes / getData.count],
+                  text: "YES",
+               backgroundColor: '#9dff8e',
+               },
+               {
+               values: [getData.r2q2_no / getData.count],
+               text: "NO",
+               backgroundColor: '#ed8a7b'
+               },
+               {
+                  values: [getData.r2q2_unsure / getData.count],
+                  text: "UNSURE",
+               backgroundColor: '#f9f9ae'
+               }               
+            ]
+         };
+
+         var myConfig3 = {
+            type: "pie", 
+            backgroundColor: "#2B313B",
+            plot: {
+            borderColor: "#2B313B",
+            borderWidth: 5,
+            // slice: 90,
+            valueBox: {
+               placement: 'out',
+               text: '%t\n%npv%',
+               fontFamily: "Open Sans"
+            },
+            tooltip:{
+               fontSize: '18',
+               fontFamily: "Open Sans",
+               padding: "5 10",
+               text: "%npv%"
+            },
+            animation:{
+               effect: 2, 
+               method: 5,
+               speed: 500,
+               sequence: 1
+            }
+            },
+            title: {
+            fontColor: "#fff",
+            text: 'Scholarly?',
+            align: "left",
+            offsetX: 10,
+            fontFamily: "Open Sans",
+            fontSize: 25
+            },
+            plotarea: {
+            margin: "20 0 0 0"  
+            },
+            series : [
+               {
+                  values : [getData.r2q3_yes / getData.count],
+                  text: "YES",
+               backgroundColor: '#9dff8e',
+               },
+               {
+               values: [getData.r2q3_no / getData.count],
+               text: "NO",
+               backgroundColor: '#ed8a7b'
+               },
+               {
+                  values: [getData.r2q3_unsure / getData.count],
+                  text: "UNSURE",
+               backgroundColor: '#f9f9ae'
+               }               
+            ]
+         };
+
+         var myConfig4 = {
+            type: "pie", 
+            backgroundColor: "#2B313B",
+            plot: {
+            borderColor: "#2B313B",
+            borderWidth: 5,
+            // slice: 90,
+            valueBox: {
+               placement: 'out',
+               text: '%t\n%npv%',
+               fontFamily: "Open Sans"
+            },
+            tooltip:{
+               fontSize: '18',
+               fontFamily: "Open Sans",
+               padding: "5 10",
+               text: "%npv%"
+            },
+            animation:{
+               effect: 2, 
+               method: 5,
+               speed: 500,
+               sequence: 1
+            }
+            },
+            title: {
+            fontColor: "#fff",
+            text: 'Abstract/Table of Contents?',
+            align: "left",
+            offsetX: 10,
+            fontFamily: "Open Sans",
+            fontSize: 25
+            },
+            plotarea: {
+            margin: "20 0 0 0"  
+            },
+            series : [
+               {
+                  values : [getData.r2q4_yes / getData.count],
+                  text: "YES",
+               backgroundColor: '#9dff8e',
+               },
+               {
+               values: [getData.r2q4_no / getData.count],
+               text: "NO",
+               backgroundColor: '#ed8a7b'
+               },
+               {
+                  values: [getData.r2q4_unsure / getData.count],
+                  text: "UNSURE",
+               backgroundColor: '#f9f9ae'
+               }               
+            ]
+         };
+
+         var myConfig5 = {
+            type: "pie", 
+            backgroundColor: "#2B313B",
+            plot: {
+            borderColor: "#2B313B",
+            borderWidth: 5,
+            // slice: 90,
+            valueBox: {
+               placement: 'out',
+               text: '%t\n%npv%',
+               fontFamily: "Open Sans"
+            },
+            tooltip:{
+               fontSize: '18',
+               fontFamily: "Open Sans",
+               padding: "5 10",
+               text: "%npv%"
+            },
+            animation:{
+               effect: 2, 
+               method: 5,
+               speed: 500,
+               sequence: 1
+            }
+            },
+            title: {
+            fontColor: "#fff",
+            text: 'Useful for Assignment?',
+            align: "left",
+            offsetX: 10,
+            fontFamily: "Open Sans",
+            fontSize: 25
+            },
+            subtitle: {
+            offsetX: 10,
+            offsetY: 10,
+            fontColor: "#8e99a9",
+            fontFamily: "Open Sans",
+            fontSize: "16",
+            text: getData.count + ' responses',
+            align: "left"
+            },
+            plotarea: {
+            margin: "20 0 0 0"  
+            },
+            series : [
+               {
+                  values : [getData.r2q5_yes / getData.count],
+                  text: "YES",
+               backgroundColor: '#9dff8e',
+               },
+               {
+               values: [getData.r2q5_no / getData.count],
+               text: "NO",
+               backgroundColor: '#ed8a7b'
+               },
+               {
+                  values: [getData.r2q5_unsure / getData.count],
+                  text: "UNSURE",
+               backgroundColor: '#f9f9ae'
+               }               
+            ]
+         };
+
+         zingchart.render({ 
+            id : 'myChart', 
+            data : myConfig, 
+            height: 410, 
+            width: 410 
+         });
+
+         zingchart.render({ 
+            id : 'myChart2', 
+            data : myConfig2, 
+            height: 410, 
+            width: 410 
+         });
+
+         zingchart.render({ 
+            id : 'myChart3', 
+            data : myConfig3, 
+            height: 410, 
+            width: 410 
+         });
+
+         zingchart.render({ 
+            id : 'myChart4', 
+            data : myConfig4, 
+            height: 410, 
+            width: 410 
+         });
+
+         zingchart.render({ 
+            id : 'myChart5', 
+            data : myConfig5, 
+            height: 700, 
+            width: 925 
+         });      
+      }
+         
+   </script>
+
+   <script>
+
+      var btn_reset = document.getElementById("reset");
+      btn_reset.addEventListener("click", function() {
+
+         if (confirm("Are you sure you want to reset?")) {
+            fetch('http://avillaruz.computerstudi.es/my_lambda/reset.php').then(function(response) { 
+
+                  return response;
+
+            }).then(function(data) {
+
+                  console.log("resetted");
+
+            });  
+         }
+      });
+   </script>
+   
+</body>
+</html>

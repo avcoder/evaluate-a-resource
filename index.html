@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <title></title>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+   <link rel="stylesheet" href="https://unpkg.com/tachyons@4.7.0/css/tachyons.min.css"/>
+
+   
+   <!-- https://stackoverflow.com/questions/247483/http-get-request-in-javascript -->
+   <script>
+      function httpGetAsync(theUrl, callback)
+      {
+         console.log("in httpgetasync, url is " + theUrl);
+         var xmlHttp = new XMLHttpRequest();
+         xmlHttp.onreadystatechange = function() { 
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                  callback(xmlHttp.responseText);
+         }
+         xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+         xmlHttp.send(null);
+      }      
+   </script>
+   
+   
+   
+   <!-- custom css -->
+   <style>
+      aside {
+         font-family: 'Times New Roman', Times, serif;
+         background-color: antiquewhite;
+         color: black;
+      }
+
+      main {
+         font-family: Arial, Helvetica, sans-serif;
+         font-size: 100%;
+         overflow: hidden;
+      }
+
+      #guide { height: 100vh; }
+
+   </style>
+</head>
+<body>
+
+   <main id="app">
+
+      <section id="guide" class="fl w-20 pa3 bg-dark-gray washed-yellow lh-copy">
+         <aside class="ba b--white-30 pa4">
+            <h2 class="f4 mv0">Assignment:</h2>
+            <p class="mv0 f5">{{ inst.assignment }}</p>
+            <br />
+            
+            <h2 class="f4 mv0">Topic:</h2>
+            <p class="mv0 f5">{{ inst.topic }}</p>
+            <br />
+
+            <h2 class="f4 mv0">Research Question:</h2>
+            <p class="mv0 f5">{{ inst.research_q }}</p>
+
+            <br />
+            <h2 class="f4 mv0">Keywords used in MultiSearch:</h2>
+            <p class="mv0 f5">{{ inst.keywords_used }}</p>
+         </aside>
+         <br /><br />
+
+         <!-- MULTIPLE CHOICE TEMPLATE - USER CAN ONLY SELECT ONE ANSWER (radio input) -->
+         <template> 
+            <article class="center br3 ba b--white-30 mb3">
+            <h2 class="tc f4 bg-near-white br3 br--top dark-gray mv0 pv2 ph3">{{ q[curr_q] }}</h2>
+            <div class="tl mv4 ml6 lh-copy f4">
+               <input type="radio" id="yes" name="yes_no">
+               <label for="yes" class="f3 pl3">Yes</label>
+               <br />
+               <input type="radio" id="no" name="yes_no">
+               <label for="no" class="f3 pl3">No</label>
+               <br />
+               <input type="radio" id="unsure" name="yes_no" checked>
+               <label for="unsure" class="f3 pl3">Unsure</label>
+               <br />               
+            </div>
+            </article>
+         </template>
+
+         <nav class="flex justify-around">
+            <!-- I used ascii/html codes for the arrows. http://www.yellowpipe.com/yis/tools/ASCII-HTML-Characters/ -->            
+            <a v-on:click="previousq" class="f6 link br2 ph3 pv2 mb2 white bg-black" href="#0" v-if="curr_q > 0">&larr; Previous</a>
+            <a v-on:click="nextq" class="f6 link br2 ph3 pv2 mb2 white bg-black" href="#0" v-if="curr_q < q.length-1">Next &rarr;</a>      
+            <a v-on:click="next_example" class="fr tc link br2 ph3 pv2 mb2 white bg-navy f6" href="#0" v-if="curr_q == q.length-1 && curr_r == 0">Next Example &rarr;</a>
+            <a v-on:click="next_example" class="fr tc link br2 ph3 pv2 mb2 white bg-dark-blue f6" href="#0" v-if="curr_q == q.length-1 && curr_r == 1">View Results</a>
+         </nav>
+         
+         
+      </section>
+
+
+      <section id="web" class="fl w-80">
+         <iframe v-bind:src="res[this.curr_r].iframe_url" style="width: 100%; height: 99vh; overflow: hidden;" frameborder="0"></iframe>
+      </section>
+
+    
+    
+   </main>
+   
+
+
+   <script src="https://unpkg.com/vue"></script>  
+   <script>
+      var resources = [
+         {
+            title: "Result #1",
+            iframe_url: 'http://ra.ocls.ca/ra/login.aspx?inst=georgian&url=http://search.ebscohost.com.eztest.ocls.ca/login.aspx?direct=true&db=bth&AN=102013544&site=eds-live&scope=site'
+         },
+
+         {
+            title: "Result #2",
+            iframe_url: 'http://ra.ocls.ca/ra/login.aspx?inst=georgian&url=http://search.ebscohost.com.eztest.ocls.ca/login.aspx?direct=true&db=e000xna&AN=516779&site=eds-live&scope=site'
+         }
+      ];
+
+
+
+      var questions = [
+            'Does the source include my keywords in the title and subject headings?',
+            'Is the source published in the required timeframe?',
+            'Does the type of my resource meet the assignment requirement? (e.g. is it scholarly?)',
+            'Does the abstract/table of contents reflect what I need to answer my research question?',
+            'Is this source useful for my assignment?'
+         
+      ];
+
+      var instructions = {
+         assignment: 'Write a 5 page research paper using at least one book and one scholarly article.  Your sources should be published within the last five years.',
+         topic: 'Genetically modified foods',
+         research_q: 'Should governments implement legislation on labelling genetically modified foods?',
+         keywords_used: 'genetically modified foods, legislation'
+      }
+
+
+
+      var app = new Vue({
+         el: '#app',
+         data: { 
+            res: resources, // initialize to first resource
+            curr_r: 0,
+            q: questions,
+            curr_q: 0,
+            inst: instructions,
+            queries: '?'  // this will contain all 5 query parameters to be sent via GET to database
+         },
+
+         methods: {
+            // moves forward one question
+            nextq: function() {
+               
+               // increase current index for questions
+               this.curr_q++;
+
+               // Assume "three"/Unsure chosen, otherwise decide if yes or no was selected.
+               // We are building the query parameter for a url GET request.
+               // r1 = result#1; q1 = question#1.
+               // If "Unsure" was selected then send true (which corresponds to unsure column in mysql db)
+               // below line example might be: "r1q1=u" 
+
+               if (document.getElementById("unsure").checked) {
+
+                  this.queries += "r" + (this.curr_r+1) + "q" + this.curr_q + "=u&"  
+
+               } else if (document.getElementById("yes").checked) {
+                  
+                  this.queries += "r" + (this.curr_r+1) + "q" + this.curr_q + "=y&"  
+
+               } else {
+
+                  this.queries += "r" + (this.curr_r+1) + "q" + this.curr_q + "=n&"  
+               }
+            },
+
+            // moves backward one question
+            previousq: function() {
+               if (this.curr_q > 0) {
+                  this.curr_q--;
+               }
+            },
+
+            // move forward to the next example
+            // must reset questions back to 0
+            // must change iframe url to next example via curr_r++
+            next_example: function() {
+
+               // continue to build parameter for 5th question; so call nextq to do that
+               this.nextq();
+
+               // push the above queries in a GET request for database to insert this new record.
+               // i.e. push [r1q1=y&r1q2=y&r1q3=y&r1q4=n&r1q5=u]   if user chose [yes, yes, yes, no, unsure]
+               // function httpGetAsync was defined above in head section
+              httpGetAsync("http://avillaruz.computerstudi.es/my_lambda/digest.php" + this.queries, function(e){console.log("callback called")});
+
+               // reset current question back to the beginning
+               // Put next iframe url via current resource
+               this.curr_q = 0;
+               this.curr_r++;
+               this.queries = '?';
+
+            }
+         }
+      });
+   </script>
+
+</body>
+</html>
