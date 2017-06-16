@@ -1,5 +1,5 @@
 # Evaluate a Resource / Guide on the Side
-Prototype using PHP, ZingChart.js and Vue.js to help students evaluate whether a library book/article is good for their assignment.
+Prototype using PHP, mySQL, ZingChart.js and Vue.js to help students evaluate whether a library book/article is good for their assignment.
 
 ## View demo
 Go http://avillaruz.computerstudi.es/my_lambda/index.html to select your answers in the left hand form.  
